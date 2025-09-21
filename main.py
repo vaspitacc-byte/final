@@ -1,19 +1,16 @@
-# main.py
 import discord
 from discord.ext import commands
-import webserver  # start Flask server
+import webserver  # start Flask server (for Railway healthcheck)
 from config import TOKEN, COMMAND_PREFIX
 
-# Intents
+# ----- Intents -----
 intents = discord.Intents.default()
-intents.message_content = True  # Required for reading message content
+intents.message_content = True  # Needed if you use message content (prefix commands, mod logs, etc.)
 
-# Bot initialization
+# ----- Bot Initialization -----
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
-# -------------------------
-# LOAD MODULE COMMANDS
-# -------------------------
+# ----- List of Extensions (Cogs) -----
 extensions = [
     # Points commands
     "modules.points.admin_points",
@@ -42,16 +39,22 @@ extensions = [
     "modules.utils.talk",
 ]
 
-for ext in extensions:
-    try:
-        bot.load_extension(ext)
-        print(f"✅ Loaded {ext}")
-    except Exception as e:
-        print(f"❌ Failed to load {ext}: {e}")
+# ----- Async Main Entrypoint -----
+async def main():
+    async with bot:
+        # Load all extensions (cogs)
+        for ext in extensions:
+            try:
+                await bot.load_extension(ext)
+                print(f"✅ Loaded {ext}")
+            except Exception as e:
+                print(f"❌ Failed to load {ext}: {e}")
+        # Start Flask webserver for Railway healthcheck
+        await webserver.start_webserver()
+        # Start the Discord bot
+        await bot.start(TOKEN)
 
-# -------------------------
-# EVENTS
-# -------------------------
+# ----- Event: on_ready -----
 @bot.event
 async def on_ready():
     print(f"🤖 {bot.user} is online and ready!")
@@ -61,17 +64,7 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Failed to sync commands: {e}")
 
-# -------------------------
-# SIMPLE TEST COMMAND
-# -------------------------
-@bot.command()
-async def ping(ctx):
-    await ctx.send("Pong!")
-
-# -------------------------
-# RUN BOT
-# -------------------------
+# ----- Run Entrypoint -----
 if __name__ == "__main__":
-    # Start Flask webserver for Railway healthcheck
-    webserver.start_webserver()
-    bot.run(TOKEN)
+    import asyncio
+    asyncio.run(main())
