@@ -3,14 +3,11 @@ from discord.ext import commands
 import webserver  # start Flask server (for Railway healthcheck)
 from config import TOKEN, COMMAND_PREFIX
 
-# ----- Intents -----
 intents = discord.Intents.default()
-intents.message_content = True  # Needed if you use message content (prefix commands, mod logs, etc.)
+intents.message_content = True
 
-# ----- Bot Initialization -----
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
-# ----- List of Extensions (Cogs) -----
 extensions = [
     # Points commands
     "modules.points.admin_points",
@@ -39,32 +36,27 @@ extensions = [
     "modules.utils.talk",
 ]
 
-# ----- Async Main Entrypoint -----
 async def main():
     async with bot:
-        # Load all extensions (cogs)
         for ext in extensions:
             try:
                 await bot.load_extension(ext)
                 print(f"✅ Loaded {ext}")
             except Exception as e:
                 print(f"❌ Failed to load {ext}: {e}")
-        # Start Flask webserver for Railway healthcheck
-        await webserver.start_webserver()
-        # Start the Discord bot
+        # FIX: Call webserver without await
+        webserver.start_webserver()
         await bot.start(TOKEN)
 
-# ----- Event: on_ready -----
 @bot.event
 async def on_ready():
     print(f"🤖 {bot.user} is online and ready!")
     try:
-        synced = await bot.tree.sync()  # Sync slash commands globally
+        synced = await bot.tree.sync()
         print(f"🔧 Synced {len(synced)} slash command(s).")
     except Exception as e:
         print(f"❌ Failed to sync commands: {e}")
 
-# ----- Run Entrypoint -----
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())

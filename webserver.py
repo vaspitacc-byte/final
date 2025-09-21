@@ -1,19 +1,14 @@
-# webserver.py
 from flask import Flask
 import threading
-import os
-
-app = Flask(__name__)
-
-@app.route("/")  
-def home():
-    return "Bot is running!"
 
 def start_webserver():
-    def run():
-        port = int(os.environ.get("PORT", 8080))
-        app.run(host="0.0.0.0", port=port)
-    
-    thread = threading.Thread(target=run)
+    app = Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return "OK", 200
+
+    # Run the server in a separate thread so it doesn't block the bot
+    thread = threading.Thread(target=lambda: app.run(host="0.0.0.0", port=8080))
     thread.daemon = True
     thread.start()
