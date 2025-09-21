@@ -1,0 +1,21 @@
+{
+  "build": {
+    "builder": "python",
+    "buildCommand": "pip install -r requirements.txt",
+    "startCommand": "python main.py",
+    "watch": ["main.py", "modules/", "requirements.txt", "config.py"]
+  },
+  "deploy": {
+    "healthcheckPath": "/",
+    "teardown": true,
+    "serverless": false
+  },
+  "env": {
+    "DISCORD_BOT_TOKEN": "",
+    "DB_PATH": "ticket_bot.db"
+  },
+  "networking": {
+    "public": true,
+    "tcpProxy": false
+  }
+}
