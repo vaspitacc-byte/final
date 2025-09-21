@@ -1,15 +1,12 @@
 # main.py
 import discord
 from discord.ext import commands
-import os
-import asyncio
 import webserver  # start Flask server
 from config import TOKEN, COMMAND_PREFIX
-from modules import points, rules, setup, tickets, utils
 
 # Intents
 intents = discord.Intents.default()
-intents.message_content = True  # Required if you read message content
+intents.message_content = True  # Required for reading message content
 
 # Bot initialization
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
@@ -17,40 +14,56 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 # -------------------------
 # LOAD MODULE COMMANDS
 # -------------------------
-# Points commands
-bot.load_extension("modules.points.admin_points")
-bot.load_extension("modules.points.check_points")
-bot.load_extension("modules.points.leaderboard")
-bot.load_extension("modules.points.points_info")
-bot.load_extension("modules.points.rank")
+extensions = [
+    # Points commands
+    "modules.points.admin_points",
+    "modules.points.check_points",
+    "modules.points.leaderboard",
+    "modules.points.points_info",
+    "modules.points.rank",
 
-# Rules commands
-bot.load_extension("modules.rules.helper_rules")
-bot.load_extension("modules.rules.proof_commands")
-bot.load_extension("modules.rules.runner_rules")
+    # Rules commands
+    "modules.rules.helper_rules",
+    "modules.rules.proof_commands",
+    "modules.rules.runner_rules",
 
-# Setup commands
-bot.load_extension("modules.setup.custom_commands_setup")
-bot.load_extension("modules.setup.role_setup")
-bot.load_extension("modules.setup.setup_reset")
+    # Setup commands
+    "modules.setup.custom_commands_setup",
+    "modules.setup.role_setup",
+    "modules.setup.setup_reset",
 
-# Tickets commands
-bot.load_extension("modules.tickets.ticket_creation")
-bot.load_extension("modules.tickets.ticket_modal")
-bot.load_extension("modules.tickets.ticket_views")
+    # Tickets commands
+    "modules.tickets.ticket_creation",
+    "modules.tickets.ticket_modal",
+    "modules.tickets.ticket_views",
 
-# Utils
-bot.load_extension("modules.utils.help_commands")
-bot.load_extension("modules.utils.talk")
+    # Utils
+    "modules.utils.help_commands",
+    "modules.utils.talk",
+]
+
+for ext in extensions:
+    try:
+        bot.load_extension(ext)
+        print(f"✅ Loaded {ext}")
+    except Exception as e:
+        print(f"❌ Failed to load {ext}: {e}")
 
 # -------------------------
 # EVENTS
 # -------------------------
 @bot.event
 async def on_ready():
-    print(f"{bot.user} is online and ready!")
+    print(f"🤖 {bot.user} is online and ready!")
+    try:
+        synced = await bot.tree.sync()  # Sync slash commands globally
+        print(f"🔧 Synced {len(synced)} slash command(s).")
+    except Exception as e:
+        print(f"❌ Failed to sync commands: {e}")
 
-# Example simple command
+# -------------------------
+# SIMPLE TEST COMMAND
+# -------------------------
 @bot.command()
 async def ping(ctx):
     await ctx.send("Pong!")
