@@ -11,7 +11,7 @@ def home():
 
 def start_webserver():
     def run():
-        port = int(os.environ.get("PORT", 8080))  # Railway sets PORT automatically
+        port = int(os.environ.get("PORT", 8080))
         app.run(host="0.0.0.0", port=port)
     
     thread = threading.Thread(target=run)

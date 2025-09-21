@@ -44,7 +44,7 @@ bot.load_extension("modules.utils.help_commands")
 bot.load_extension("modules.utils.talk")
 
 # -------------------------
-# Events
+# EVENTS
 # -------------------------
 @bot.event
 async def on_ready():
@@ -58,4 +58,7 @@ async def ping(ctx):
 # -------------------------
 # RUN BOT
 # -------------------------
-bot.run(TOKEN)
+if __name__ == "__main__":
+    # Start Flask webserver for Railway healthcheck
+    webserver.start_webserver()
+    bot.run(TOKEN)
