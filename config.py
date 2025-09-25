@@ -1,15 +1,18 @@
-# config.py
+import os
 
 # ---------------- Bot Token ----------------
-TOKEN = "YOUR_BOT_TOKEN_HERE"
+# Read the bot token from environment variable (set in Render dashboard)
+TOKEN = os.getenv("TOKEN")
+if not TOKEN:
+    raise ValueError("Bot token not found! Please set the TOKEN environment variable.")
 
 # ---------------- Command Prefix ----------------
-# Even though your bot uses slash commands (/), some legacy commands may still use this
+# Even though the bot uses slash commands (/), legacy prefix commands may still use this
 COMMAND_PREFIX = "/"
 
 # ---------------- Database Path ----------------
-# Path to your SQLite database file (in the same folder as main.py)
-DB_PATH = "database.db"
+# Path to your SQLite database file (stored locally in the same folder as main.py)
+DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
 
 # ---------------- Optional: Other Config ----------------
 # You can add other constants here if needed in the future
