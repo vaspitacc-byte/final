@@ -13,6 +13,3 @@ COMMAND_PREFIX = "/"
 # ---------------- Database Path ----------------
 # Path to your SQLite database file (stored locally in the same folder as main.py)
 DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
-
-# ---------------- Optional: Other Config ----------------
-# You can add other constants here if needed in the future
