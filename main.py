@@ -1,7 +1,9 @@
+# main.py
 import discord
 from discord.ext import commands
 import webserver  # start Flask server (for Railway healthcheck)
 from config import TOKEN, COMMAND_PREFIX
+from database import db  # singleton from database.py
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -37,6 +39,9 @@ extensions = [
 ]
 
 async def main():
+    # Initialize database tables
+    await db.initialize_database()
+
     async with bot:
         for ext in extensions:
             try:
@@ -44,7 +49,8 @@ async def main():
                 print(f"✅ Loaded {ext}")
             except Exception as e:
                 print(f"❌ Failed to load {ext}: {e}")
-        # FIX: Call webserver without await
+
+        # Start webserver (healthcheck)
         webserver.start_webserver()
         await bot.start(TOKEN)
 
